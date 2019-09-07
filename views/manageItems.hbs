@@ -1,0 +1,155 @@
+<div class="main-container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link focus active dropdownItems" data-toggle="tab" href="#newItem">Add Item With Barcode</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link dropdownItems" data-toggle="tab" id="ItemWithoutBarcodeTab"href="#newItemBarcodeless">Add Item Without Barcode</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link dropdownItems" data-toggle="tab" id="Tab" href="#editItem">Edit Existing Items</a>
+        </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade active focus show" id="newItem">
+            <h1>Add an item with a barcode</h1>
+            <div class="new-item-container">
+                <form method="post" action="/addItemByBarcode" id="addItemByBarcode">
+                    <div class="form-group">
+                        <div id='barcode-scanner'></div>
+                        <label for="barcode">Barcode</label>
+                        <input id="barcode" type='text' class="form-control" name="barcode" placeholder="Click the button to scan an EAN..."
+                            type="text" />
+                        <div id="badBarcodeNumber" class="invalid-feedback" style="display: none">A valid
+                            Barcode number is between 8 to 14 digits.</div>
+                        <button class="btn btn-primary" id="scannerButton" type="button" data-toggle="modal" data-target="#livestream_scanner">Open
+                            Scanner</button>
+                    </div>
+                    <input type="submit" class="btn btn-primary" disabled="disabled" id="addButton" value="Add Item">
+                </form>
+            </div>
+        </div>
+        <div class="modal" id="livestream_scanner">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Barcode Scanner</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="position: static">
+                        <div id="interactive" class="viewport"></div>
+                        <div class="error"></div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div class="tab-pane fade" id="newItemBarcodeless">
+            <h1>Add an item without a barcode</h1>
+            <div class="new-item-container">
+                <form method="post" action="/addItemByName" id="addItemByName">
+                    <div class="form-group">
+                        <label for="itemName">Item name</label>
+                        <input type="text" class="form-control" name="itemName" id="itemName" placeholder="Enter item name..."
+                            required>
+                        <div id="badItemName" class="invalid-feedback" style="display: none">A valid
+                            item name id is between 4 and 20 characters with no special characters.</div>
+                    </div>
+                    <input type="submit" class="btn btn-primary" disabled="disabled" id="addButton" value="Add Item">
+                </form>
+            </div>
+        </div>
+        <style>
+            #interactive.viewport {position: relative; width: 100%; height: auto; overflow: hidden; text-align: center;}
+            #interactive.viewport > canvas, #interactive.viewport > video {max-width: 100%;width: 100%;}
+            canvas.drawing, canvas.drawingBuffer {position: absolute; left: 0; top: 0;}
+        </style>
+        <div class="tab-pane fade" id="editItem">
+            {{#if items}}
+            <h4> Items in the database</h4>
+            <div class="card-container">
+                {{#each items}}
+                <div class="card mb-3 item-container" style="max-width: 20rem;">
+                    <div class="card-header">
+                        <div class="item-header">
+                            <div class="item-header-text">{{this.itemName}}</div>
+                            <button type="button" id={{this.itemName}} class="btn btn-primary" data-toggle="modal" data-target="#{{this.itemName}}Modal">Edit</button>
+                            <!-- The modal -->
+                            <div class="modal" id="{{this.itemName}}Modal">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Edit {{this.itemName}}</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Form inside of modal -->
+                                            <form method="post" action="/updateItem">
+                                                <input type="hidden" name="oldItemName" id="oldItemName" value={{this.itemName}}>
+                                                <div class="form-group">
+                                                    <label for="itemName">Item Name</label>
+                                                    <input type="text" onClick="this.select();" class="form-control newItemNameBox"
+                                                        name="newItemName" id="newItemName" value={{this.itemName}} required>
+                                                    <div id="badItemName" class="invalid-feedback badItemNameBox" style="display: none">A valid
+                                                        Item name should be between 4 and 20 characters with no special characters.</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="barcode">Barcode</label>
+                                                    <input type="text" onClick="this.select();" class="form-control barcodeEditBox"
+                                                        name="barcode" id="barcodeEdit" value={{this.barcode}}>
+                                                         <div id="badBarcodeNumber" class="invalid-feedback badBarcodeNumber" style="display: none">A valid Barcode number is between 8 to 14 digits.</div>
+                                                </div>
+                                         
+                                                <div class="form-group">
+                                                    <label for="quantity">Quantity</label>
+                                                    <input type="text" onClick="this.select();" class="form-control quantityEditBox"
+                                                        name="quantity" id="quantityEdit" value={{this.quantity}} required>
+                                                    <div id="badQuantityNumber" class="invalid-feedback badQuantityNumberBox" style="display: none">A valid
+                                                        Quantity number should be between 1 and 3 digits.</div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="weight">Bearcat Bucks</label>
+                                                    <input type="text" onClick="this.select();" class="form-control weightEditBox"
+                                                        name="weight" id="weightEdit" value={{this.weight}} required>
+                                                    <div id="badWeightNumber" class="invalid-feedback badWeightNumberBox" style="display: none">A valid
+                                                        Bearcat Bucks number is between 1 and 3 digits.</div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <input type="submit" id=Delete{{this.itemName}} class="btn btn-danger" formaction="/deleteItem"
+                                                        value="Delete {{this.itemName}}"></button>
+                                                    <input type="submit" class="btn btn-primary" value="Save change">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text barcode-text">Barcode: {{this.barcode}}</p>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Total: {{this.quantity}}</p>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Bearcat Bucks: {{this.weight}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+        {{else}}
+        <li class="list-group-item">
+            <h4 class="text-center">
+                No items found
+            </h4>
+        </li>
+        {{/if}}
+    </div>
+</div>

@@ -1,0 +1,55 @@
+<script>
+  function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    var id_token = googleUser.getAuthResponse().id_token;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/tokenvalidate');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+    xhr.send(`idtoken=${id_token}`);
+    $(".g-signin2").css("display", "none");
+    $(".data").css("display", "block");
+    $('#pic').attr('src', profile.getImageUrl());
+    $('#email').text(profile.getEmail());
+  }
+</script>
+<script>
+  function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    document.cookie = "userId= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "isAdmin= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+    document.cookie = "userEmail= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+    auth2.signOut().then(function () {
+      alert("You have been successfully signed out");
+      $(".g-signin2").css("display", "block");
+      $(".data").css("display", "none")
+    });
+  }
+</script>
+<div>
+  <div class="login-container">
+    <div class="login-header">
+      <h2>Log In</h2>
+    </div>
+    <div class="login-button">
+      <form>
+        <div class="login-page">
+          <div class="g-signin2" data-onsuccess="onSignIn"></div>
+          <div class="data">
+            <p id="email" class="alert alert-danger"></p>
+            <div class="signOutContainer">
+              <button onclick="signOut()" class="btn btn-danger">Sign Out</button>
+            </div>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+<style>
+  body {
+    background: url("https://www.gannett-cdn.com/-mm-/5dedda41ef926db7bcedc19239643da21422bf3f/c=0-0-3812-2154/local/-/media/2017/12/12/Cincinnati/Cincinnati/636486660380835135-university-of-cincinnati.JPG?width=3200&height=1680&fit=crop") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  }
+</style>
