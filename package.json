@@ -51,7 +51,7 @@
         "quagga": "^0.12.1",
         "req": "^0.1.4",
         "uglifyjs-webpack-plugin": "^2.1.1",
-        "underscore": "^1.9.1",
+        "underscore": "^1.12.1",
         "update": "^0.7.4"
     },
     "devDependencies": {
